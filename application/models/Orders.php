@@ -49,8 +49,11 @@ class Orders extends MY_Model {
     }
 
     // cancel an order
-    function flush($num) {
-        
+   function flush($num) {
+        $this->orderitems->delete_some($num);
+        $record = $this->orders->get($num);
+        $record->status = 'x';
+        $this->orders->update($record);
     }
 
     // validate an order
@@ -60,9 +63,9 @@ class Orders extends MY_Model {
         $items = $CI->orderitems->group($num);
         $gotem = array();
         if (count($items) > 0)
-            foreach ($items as $item){
+            foreach ($items as $item) {
                 $menu = $CI->menu->get($item->item);
-                $gotem[$gotem->category] = 1;
+                $gotem[$menu->category] = 1;
             }
         return isset($gotem['m']) && isset($gotem['d']) && isset($gotem['s']);
     }
